@@ -5,6 +5,7 @@ using UnityEngine;
 public class CharacterSoundController : MonoBehaviour
 {
     public AudioClip jump;
+    public AudioClip scoreHighlight;
     private AudioSource audioPlayer;
     // Start is called before the first frame update
     void Start()
@@ -14,5 +15,9 @@ public class CharacterSoundController : MonoBehaviour
     public void PlayJump()
     {
         audioPlayer.PlayOneShot(jump);
+    }
+    public void PlayScoreHighlight()
+    {
+        audioPlayer.PlayOneShot(scoreHighlight);
     }
 }

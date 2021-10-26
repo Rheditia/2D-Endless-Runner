@@ -17,6 +17,19 @@ public class CharacterMoveController : MonoBehaviour
     public float groundRaycastDistance;
     public LayerMask groundLayerMask;
 
+    [Header("Scoring")]
+    public ScoreController score;
+    public float scoringRatio;
+
+    [Header("GameOver")]
+    public GameObject gameOverScreen;
+    public float fallPositionY;
+
+    [Header("Camera")]
+    public CameraMoveController gameCamera;
+
+    private float lastPositionX;
+
     private bool isJumping;
     private bool isOnGround;
 
@@ -45,6 +58,22 @@ public class CharacterMoveController : MonoBehaviour
         }
         // change animation
         animator.SetBool("isOnGround", isOnGround);
+
+        // calculate score
+        int distancePassed = Mathf.FloorToInt(transform.position.x - lastPositionX);
+        int scoreIncrement = Mathf.FloorToInt(distancePassed / scoringRatio);
+
+        if (scoreIncrement > 0)
+        {
+            score.IncreaseCurrentScore(scoreIncrement);
+            lastPositionX += distancePassed;
+        }
+
+        // game over
+        if (transform.position.y < fallPositionY)
+        {
+            GameOver();
+        }
     }
 
     void FixedUpdate()
@@ -74,6 +103,21 @@ public class CharacterMoveController : MonoBehaviour
         
         velocityVector.x = Mathf.Clamp(velocityVector.x + moveAccel * Time.deltaTime, 0.0f, maxSpeed);
         rb2d.velocity = velocityVector;
+    }
+
+    private void GameOver()
+    {
+        // set high score
+        score.FinishScoring();
+
+        // stop camera movement
+        gameCamera.enabled = false;
+
+        // show gameover
+        gameOverScreen.SetActive(true);
+
+        // disable this too
+        this.enabled = false;
     }
 
     private void OnDrawGizmos()
